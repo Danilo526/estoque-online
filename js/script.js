@@ -1,364 +1,333 @@
-// Dados de exemplo para inicialização
-let inventory = [
-    {
-        id: 1,
-        code: 'TEC-001',
-        name: 'Teclado Mecânico',
-        category: 'electronics',
-        price: 249.99,
-        quantity: 15
-    },
-    {
-        id: 2,
-        code: 'MOU-002',
-        name: 'Mouse Gamer',
-        category: 'electronics',
-        price: 129.99,
-        quantity: 20
-    },
-    {
-        id: 3,
-        code: 'MON-003',
-        name: 'Monitor 24"',
-        category: 'electronics',
-        price: 899.99,
-        quantity: 5
-    }
+// Dados iniciais para demonstração
+let products = [
+    {id: 1, code: "TEC-001", name: "Teclado Mecânico", category: "electronics", price: 249.90, quantity: 15, status: "Em estoque"},
+    {id: 2, code: "MOU-002", name: "Mouse Gamer", category: "electronics", price: 89.90, quantity: 23, status: "Em estoque"},
+    {id: 3, code: "CAD-001", name: "Cadeira Ergonômica", category: "furniture", price: 799.90, quantity: 5, status: "Baixo estoque"},
+    {id: 4, code: "NOT-003", name: "Notebook Ultra", category: "electronics", price: 3599.90, quantity: 7, status: "Em estoque"}
 ];
 
+// Dados de movimentação para demonstração
 let transactions = [
-    {
-        date: '2025-02-21',
-        code: 'TEC-001',
-        product: 'Teclado Mecânico',
-        type: 'entrada',
-        quantity: 5,
-        value: 1249.95
-    },
-    {
-        date: '2025-02-21',
-        code: 'MOU-002',
-        product: 'Mouse Gamer',
-        type: 'saída',
-        quantity: 2,
-        value: 259.98
-    }
+    {date: "21/02/2025", code: "TEC-001", product: "Teclado Mecânico", type: "Entrada", quantity: 5, totalValue: 1249.50},
+    {date: "21/02/2025", code: "MOU-002", product: "Mouse Gamer", type: "Entrada", quantity: 10, totalValue: 899.00},
+    {date: "21/02/2025", code: "CAD-001", product: "Cadeira Ergonômica", type: "Saída", quantity: 2, totalValue: 1599.80},
+    {date: "20/02/2025", code: "NOT-003", product: "Notebook Ultra", type: "Entrada", quantity: 3, totalValue: 10799.70}
 ];
 
-// Elementos DOM
-const productNameInput = document.getElementById('product-name');
-const productCodeInput = document.getElementById('product-code');
-const productCategorySelect = document.getElementById('product-category');
-const productPriceInput = document.getElementById('product-price');
-const productQuantityInput = document.getElementById('product-quantity');
-const addStockForm = document.getElementById('add-stock-form');
-const removeStockForm = document.getElementById('remove-stock-form');
-const removeProductSelect = document.getElementById('remove-product-select');
-const removeQuantityInput = document.getElementById('remove-quantity');
-const inventoryTableBody = document.getElementById('inventory-table-body');
-const dailyReportBody = document.getElementById('daily-report-body');
-const totalProductsEl = document.getElementById('total-products');
-const stockValueEl = document.getElementById('stock-value');
-const todayEntriesEl = document.getElementById('today-entries');
-const todayExitsEl = document.getElementById('today-exits');
-const tabButtons = document.querySelectorAll('.tab-btn');
-
-// Formatador de moeda
-const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-});
-
-// Inicialização
+// Inicializa o aplicativo quando o documento estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
-    init();
+    initializeApp();
 });
 
-function init() {
-    updateInventoryTable();
-    updateDailyReport();
-    updateDashboardSummary();
-    populateRemoveProductSelect();
-    setupEventListeners();
+function initializeApp() {
+    // Atualiza os valores do dashboard
+    updateDashboard();
+    
+    // Carrega a lista de produtos
+    loadInventoryTable();
+    
+    // Carrega o relatório diário
+    loadDailyReport();
+    
+    // Preenche o select de produtos para remoção
+    populateProductSelect();
+    
+    // Inicializa os event listeners
+    initEventListeners();
 }
 
-// Função para atualizar a tabela de inventário
-function updateInventoryTable() {
-    inventoryTableBody.innerHTML = '';
+function updateDashboard() {
+    // Atualiza os indicadores do dashboard
+    document.getElementById('total-products').textContent = products.length;
     
-    inventory.forEach(item => {
-        const tr = document.createElement('tr');
+    const totalValue = products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+    document.getElementById('stock-value').textContent = `R$ ${totalValue.toFixed(2)}`;
+    
+    // Filtra as transações de hoje
+    const today = "21/02/2025"; // Data atual simulada
+    const todayEntries = transactions.filter(t => t.date === today && t.type === "Entrada").length;
+    const todayExits = transactions.filter(t => t.date === today && t.type === "Saída").length;
+    
+    document.getElementById('today-entries').textContent = todayEntries;
+    document.getElementById('today-exits').textContent = todayExits;
+}
+
+function loadInventoryTable() {
+    const tableBody = document.getElementById('inventory-table-body');
+    tableBody.innerHTML = '';
+    
+    products.forEach(product => {
+        const row = document.createElement('tr');
         
-        // Define o status baseado na quantidade
-        let status = '';
-        if (item.quantity > 10) {
-            status = '<span class="status-badge in-stock">Em estoque</span>';
-        } else if (item.quantity > 0) {
-            status = '<span class="status-badge low-stock">Estoque baixo</span>';
-        } else {
-            status = '<span class="status-badge out-of-stock">Sem estoque</span>';
+        // Adiciona classe baseada no status do estoque
+        if (product.quantity <= 5) {
+            row.classList.add('low-stock');
         }
         
-        tr.innerHTML = `
-            <td>${item.code}</td>
-            <td>${item.name}</td>
-            <td>${getCategoryName(item.category)}</td>
-            <td>${currencyFormatter.format(item.price)}</td>
-            <td>${item.quantity}</td>
-            <td>${status}</td>
+        row.innerHTML = `
+            <td>${product.code}</td>
+            <td>${product.name}</td>
+            <td>${getCategoryName(product.category)}</td>
+            <td>R$ ${product.price.toFixed(2)}</td>
+            <td>${product.quantity}</td>
+            <td>${product.status}</td>
             <td>
-                <span class="action-icon" onclick="editItem(${item.id})">✏️</span>
-                <span class="action-icon" onclick="removeItem(${item.id})">🗑️</span>
+                <button class="action-btn edit-btn" data-id="${product.id}">Editar</button>
+                <button class="action-btn delete-btn" data-id="${product.id}">Excluir</button>
             </td>
         `;
         
-        inventoryTableBody.appendChild(tr);
-    });
-}
-
-// Função para atualizar o relatório diário
-function updateDailyReport() {
-    dailyReportBody.innerHTML = '';
-    
-    transactions.forEach(transaction => {
-        const tr = document.createElement('tr');
-        
-        tr.innerHTML = `
-            <td>${formatDate(transaction.date)}</td>
-            <td>${transaction.code}</td>
-            <td>${transaction.product}</td>
-            <td>${transaction.type === 'entrada' ? 'Entrada' : 'Saída'}</td>
-            <td>${transaction.quantity}</td>
-            <td>${currencyFormatter.format(transaction.value)}</td>
-        `;
-        
-        dailyReportBody.appendChild(tr);
-    });
-}
-
-// Função para atualizar o resumo do dashboard
-function updateDashboardSummary() {
-    // Calcular total de produtos únicos
-    totalProductsEl.textContent = inventory.length;
-    
-    // Calcular valor total do estoque
-    const totalValue = inventory.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    stockValueEl.textContent = currencyFormatter.format(totalValue);
-    
-    // Calcular entradas e saídas do dia
-    const today = new Date().toISOString().split('T')[0];
-    const todayTransactions = transactions.filter(t => t.date === today);
-    
-    const entries = todayTransactions
-        .filter(t => t.type === 'entrada')
-        .reduce((sum, t) => sum + t.quantity, 0);
-        
-    const exits = todayTransactions
-        .filter(t => t.type === 'saída')
-        .reduce((sum, t) => sum + t.quantity, 0);
-        
-    todayEntriesEl.textContent = entries;
-    todayExitsEl.textContent = exits;
-}
-
-// Função para preencher o select de produtos para remoção
-function populateRemoveProductSelect() {
-    removeProductSelect.innerHTML = '<option value="">Selecione um produto</option>';
-    
-    inventory.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item.id;
-        option.textContent = `${item.code} - ${item.name} (${item.quantity} em estoque)`;
-        removeProductSelect.appendChild(option);
-    });
-}
-
-// Configurar listeners de eventos
-function setupEventListeners() {
-    // Form de adicionar ao estoque
-    addStockForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validar campos
-        if (!productNameInput.value || !productCodeInput.value || !productCategorySelect.value ||
-            !productPriceInput.value || !productQuantityInput.value) {
-            alert('Por favor, preencha todos os campos.');
-            return;
-        }
-        
-        const price = parseFloat(productPriceInput.value);
-        const quantity = parseInt(productQuantityInput.value);
-        
-        if (isNaN(price) || price <= 0) {
-            alert('O preço deve ser um número positivo.');
-            return;
-        }
-        
-        if (isNaN(quantity) || quantity <= 0) {
-            alert('A quantidade deve ser um número inteiro positivo.');
-            return;
-        }
-        
-        // Verificar se o código já existe
-        const existingProduct = inventory.find(item => item.code === productCodeInput.value);
-        
-        if (existingProduct) {
-            // Atualizar quantidade do produto existente
-            existingProduct.quantity += quantity;
-            
-            // Registrar transação
-            const transaction = {
-                date: new Date().toISOString().split('T')[0],
-                code: existingProduct.code,
-                product: existingProduct.name,
-                type: 'entrada',
-                quantity: quantity,
-                value: existingProduct.price * quantity
-            };
-            
-            transactions.push(transaction);
-            
-            alert(`Quantidade atualizada para o produto ${existingProduct.name}.`);
-        } else {
-            // Adicionar novo item ao inventário
-            const newItem = {
-                id: inventory.length > 0 ? Math.max(...inventory.map(i => i.id)) + 1 : 1,
-                code: productCodeInput.value,
-                name: productNameInput.value,
-                category: productCategorySelect.value,
-                price: price,
-                quantity: quantity
-            };
-            
-            inventory.push(newItem);
-            
-            // Registrar transação
-            const transaction = {
-                date: new Date().toISOString().split('T')[0],
-                code: newItem.code,
-                product: newItem.name,
-                type: 'entrada',
-                quantity: newItem.quantity,
-                value: newItem.price * newItem.quantity
-            };
-            
-            transactions.push(transaction);
-            
-            alert('Produto adicionado com sucesso!');
-        }
-        
-        // Atualizar a interface
-        updateInventoryTable();
-        updateDailyReport();
-        updateDashboardSummary();
-        populateRemoveProductSelect();
-        
-        // Limpar formulário
-        addStockForm.reset();
+        tableBody.appendChild(row);
     });
     
-    // Form de remover do estoque
-    removeStockForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const productId = parseInt(removeProductSelect.value);
-        const quantity = parseInt(removeQuantityInput.value);
-        
-        // Validar campos
-        if (!productId || isNaN(productId)) {
-            alert('Por favor, selecione um produto.');
-            return;
-        }
-        
-        if (!quantity || isNaN(quantity) || quantity <= 0) {
-            alert('Por favor, informe uma quantidade válida.');
-            return;
-        }
-        
-        // Encontrar produto no inventário
-        const productIndex = inventory.findIndex(item => item.id === productId);
-        
-        if (productIndex === -1) {
-            alert('Produto não encontrado.');
-            return;
-        }
-        
-        const product = inventory[productIndex];
-        
-        // Verificar se há quantidade suficiente
-        if (product.quantity < quantity) {
-            alert(`Quantidade insuficiente. Disponível: ${product.quantity}`);
-            return;
-        }
-        
-        // Atualizar quantidade
-        product.quantity -= quantity;
-        
-        // Se a quantidade chegar a zero, perguntar se deseja remover completamente
-        if (product.quantity === 0 && confirm('O produto ficou sem estoque. Deseja removê-lo completamente do cadastro?')) {
-            inventory.splice(productIndex, 1);
-        }
-        
-        // Registrar transação
-        const transaction = {
-            date: new Date().toISOString().split('T')[0],
-            code: product.code,
-            product: product.name,
-            type: 'saída',
-            quantity: quantity,
-            value: product.price * quantity
-        };
-        
-        transactions.push(transaction);
-        
-        // Atualizar a interface
-        updateInventoryTable();
-        updateDailyReport();
-        updateDashboardSummary();
-        populateRemoveProductSelect();
-        
-        // Limpar formulário
-        removeStockForm.reset();
-        
-        alert('Produto removido com sucesso!');
+    // Adiciona listeners aos botões de ação
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = parseInt(this.getAttribute('data-id'));
+            editProduct(productId);
+        });
     });
     
-    // Alternar entre tabs
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const tabContainer = this.closest('.tab-container');
-            const tabId = this.getAttribute('data-tab');
-            
-            // Remover classe ativa de todos os botões e conteúdos
-            tabContainer.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            tabContainer.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Adicionar classe ativa ao botão e conteúdo correto
-            this.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = parseInt(this.getAttribute('data-id'));
+            deleteProduct(productId);
         });
     });
 }
 
-// Funções para editar e remover itens (chamadas pelos ícones da tabela)
-function editItem(id) {
-    const item = inventory.find(i => i.id === id);
+function getCategoryName(categoryCode) {
+    const categories = {
+        "electronics": "Eletrônicos",
+        "furniture": "Móveis",
+        "clothing": "Vestuário",
+        "books": "Livros",
+        "other": "Outros"
+    };
     
-    if (!item) {
+    return categories[categoryCode] || categoryCode;
+}
+
+function loadDailyReport() {
+    const reportBody = document.getElementById('daily-report-body');
+    reportBody.innerHTML = '';
+    
+    transactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${transaction.date}</td>
+            <td>${transaction.code}</td>
+            <td>${transaction.product}</td>
+            <td class="${transaction.type.toLowerCase()}">${transaction.type}</td>
+            <td>${transaction.quantity}</td>
+            <td>R$ ${transaction.totalValue.toFixed(2)}</td>
+        `;
+        
+        reportBody.appendChild(row);
+    });
+}
+
+function populateProductSelect() {
+    const select = document.getElementById('remove-product-select');
+    select.innerHTML = '<option value="">Selecione um produto</option>';
+    
+    products.forEach(product => {
+        const option = document.createElement('option');
+        option.value = product.id;
+        option.textContent = `${product.code} - ${product.name} (${product.quantity} em estoque)`;
+        select.appendChild(option);
+    });
+}
+
+function initEventListeners() {
+    // Controladores de tabs
+    document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const tabContainer = this.closest('.tab-container');
+            const tabName = this.getAttribute('data-tab');
+            
+            // Remove a classe active de todos os botões e conteúdos
+            tabContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            tabContainer.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Adiciona a classe active ao botão e conteúdo correto
+            this.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        });
+    });
+    
+    // Formulário de adição de produto
+    document.getElementById('add-stock-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addNewProduct();
+    });
+    
+    // Formulário de remoção de produto
+    document.getElementById('remove-stock-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        removeProductStock();
+    });
+}
+
+function addNewProduct() {
+    // Obtém os valores do formulário
+    const name = document.getElementById('product-name').value.trim();
+    const code = document.getElementById('product-code').value.trim();
+    const category = document.getElementById('product-category').value;
+    const price = parseFloat(document.getElementById('product-price').value);
+    const quantity = parseInt(document.getElementById('product-quantity').value);
+    
+    // Validação básica
+    if (!name || !code || !category || isNaN(price) || isNaN(quantity)) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+    }
+    
+    // Verifica se o código já existe
+    if (products.some(p => p.code === code)) {
+        alert('Este código de produto já está em uso. Por favor, escolha outro.');
+        return;
+    }
+    
+    // Cria o novo produto
+    const newProduct = {
+        id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
+        code,
+        name,
+        category,
+        price,
+        quantity,
+        status: quantity <= 5 ? 'Baixo estoque' : 'Em estoque'
+    };
+    
+    // Adiciona o produto ao array
+    products.push(newProduct);
+    
+    // Registra a transação
+    const today = "21/02/2025"; // Data atual simulada
+    transactions.push({
+        date: today,
+        code: newProduct.code,
+        product: newProduct.name,
+        type: "Entrada",
+        quantity: newProduct.quantity,
+        totalValue: newProduct.price * newProduct.quantity
+    });
+    
+    // Atualiza a interface
+    updateDashboard();
+    loadInventoryTable();
+    loadDailyReport();
+    populateProductSelect();
+    
+    // Limpa o formulário
+    document.getElementById('add-stock-form').reset();
+    
+    // Notifica o usuário
+    alert(`Produto "${name}" adicionado com sucesso!`);
+}
+
+function removeProductStock() {
+    // Obtém os valores do formulário
+    const productId = parseInt(document.getElementById('remove-product-select').value);
+    const quantity = parseInt(document.getElementById('remove-quantity').value);
+    const reason = document.getElementById('remove-reason').value;
+    
+    // Validação básica
+    if (isNaN(productId) || isNaN(quantity) || !reason) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+    }
+    
+    // Encontra o produto
+    const productIndex = products.findIndex(p => p.id === productId);
+    if (productIndex === -1) {
         alert('Produto não encontrado.');
         return;
     }
     
-    // Preencher formulário para edição
-    productNameInput.value = item.name;
-    productCodeInput.value = item.code;
-    productCategorySelect.value = item.category;
-    productPriceInput.value = item.price;
-    productQuantityInput.value = 0; // Quantidade inicial zero para adição
+    const product = products[productIndex];
     
-    // Mudar para a tab
+    // Verifica se há estoque suficiente
+    if (product.quantity < quantity) {
+        alert(`Estoque insuficiente. Disponível: ${product.quantity} unidades.`);
+        return;
+    }
+    
+    // Atualiza a quantidade
+    product.quantity -= quantity;
+    
+    // Atualiza o status se necessário
+    if (product.quantity <= 5) {
+        product.status = 'Baixo estoque';
+    }
+    if (product.quantity === 0) {
+        product.status = 'Sem estoque';
+    }
+    
+    // Registra a transação
+    const today = "21/02/2025"; // Data atual simulada
+    transactions.push({
+        date: today,
+        code: product.code,
+        product: product.name,
+        type: "Saída",
+        quantity: quantity,
+        totalValue: product.price * quantity
+    });
+    
+    // Atualiza a interface
+    updateDashboard();
+    loadInventoryTable();
+    loadDailyReport();
+    populateProductSelect();
+    
+    // Limpa o formulário
+    document.getElementById('remove-stock-form').reset();
+    
+    // Notifica o usuário
+    alert(`${quantity} unidades de "${product.name}" removidas com sucesso!`);
+}
+
+function editProduct(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    // Esta é uma implementação simples. Em um sistema real, você poderia abrir um modal.
+    const newName = prompt("Novo nome:", product.name);
+    if (newName === null) return;
+    
+    const newPrice = parseFloat(prompt("Novo preço:", product.price));
+    if (isNaN(newPrice)) return;
+    
+    // Atualiza o produto
+    product.name = newName;
+    product.price = newPrice;
+    
+    // Atualiza a interface
+    loadInventoryTable();
+    populateProductSelect();
+    
+    alert(`Produto "${product.name}" atualizado com sucesso!`);
+}
+
+function deleteProduct(productId) {
+    if (!confirm("Tem certeza que deseja excluir este produto?")) {
+        return;
+    }
+    
+    const productIndex = products.findIndex(p => p.id === productId);
+    if (productIndex === -1) return;
+    
+    const productName = products[productIndex].name;
+    
+    // Remove o produto
+    products.splice(productIndex, 1);
+    
+    // Atualiza a interface
+    updateDashboard();
+    loadInventoryTable();
+    populateProductSelect();
+    
+    alert(`Produto "${productName}" excluído com sucesso!`);
+}
