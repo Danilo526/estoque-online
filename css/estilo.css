@@ -1,71 +1,33 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Estilo para o login */
 body {
     font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
 }
 
-.login-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: url('images/fundo.jpg'); /* LOCAL DA IMAGEM */
-    background-size: cover;
-}
-
-.login-screen form {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 8px;
-}
-
-input {
-    margin: 10px 0;
-    padding: 10px;
-    width: 250px;
-}
-
-button {
-    padding: 10px;
-    margin: 10px;
-    cursor: pointer;
-}
-
-/* Estilo para a tela principal */
-.main-screen {
-    background: url('images/fundo.jpg'); /* LOCAL DA IMAGEM */
-    background-size: cover;
-    padding: 20px;
+header {
+    background: #333;
     color: white;
-}
-
-.estoque-buttons {
-    display: flex;
-    gap: 20px;
-}
-
-.estoque-btn {
     padding: 20px;
-    border: none;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    cursor: pointer;
 }
 
-footer {
-    margin-top: 20px;
+.controls {
+    margin: 20px;
+}
+
+input, button {
+    padding: 10px;
+    margin: 5px;
+}
+
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 10px;
     text-align: center;
 }
