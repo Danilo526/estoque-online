@@ -1,39 +1,212 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <script defer src="script.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Estoque</title>
+    <title>Sistema de Gerenciamento de Estoque</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Gerenciador de Estoque</h1>
-        <img src="LOCAL_DA_IMAGEM" alt="Logo" id="logo">
-    </header>
-    
-    <main>
-        <div class="controls">
-            <input type="text" id="produto" placeholder="Nome do Produto">
-            <input type="number" id="quantidade" placeholder="Quantidade">
-            <button onclick="adicionarEstoque()">Adicionar Estoque</button>
-            <button onclick="removerEstoque()">Remover Estoque</button>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">SE</div>
+                <div class="app-title">
+                    <h1>StockEasy</h1>
+                    <p>Sistema de Gerenciamento de Estoque</p>
+                </div>
+            </div>
+            <nav>
+                <a href="#" class="nav-link active">Dashboard</a>
+                <a href="#" class="nav-link">Produtos</a>
+                <a href="#" class="nav-link">Relatórios</a>
+                <a href="#" class="nav-link">Configurações</a>
+            </nav>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card summary-card">
+                <div>
+                    <p class="summary-title">Total de Produtos</p>
+                    <h3 class="summary-value" id="total-products">0</h3>
+                </div>
+                <p class="summary-change positive">+5% desde o último mês</p>
+            </div>
+            
+            <div class="card summary-card">
+                <div>
+                    <p class="summary-title">Valor do Estoque</p>
+                    <h3 class="summary-value" id="stock-value">R$ 0,00</h3>
+                </div>
+                <p class="summary-change positive">+3,2% desde o último mês</p>
+            </div>
+            
+            <div class="card summary-card">
+                <div>
+                    <p class="summary-title">Entradas Hoje</p>
+                    <h3 class="summary-value" id="today-entries">0</h3>
+                </div>
+                <p class="summary-change positive">+2 desde ontem</p>
+            </div>
+            
+            <div class="card summary-card">
+                <div>
+                    <p class="summary-title">Saídas Hoje</p>
+                    <h3 class="summary-value" id="today-exits">0</h3>
+                </div>
+                <p class="summary-change negative">+5 desde ontem</p>
+            </div>
         </div>
         
-        <table>
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Entradas</th>
-                    <th>Saídas</th>
-                    <th>Estoque Atual</th>
-                </tr>
-            </thead>
-            <tbody id="tabela-estoque">
-            </tbody>
-        </table>
-    </main>
+        <div class="main-content">
+            <div class="card inventory-form">
+                <h2 class="form-title">Gerenciar Estoque</h2>
+                
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="add-stock">Adicionar</button>
+                        <button class="tab-btn" data-tab="remove-stock">Remover</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="add-stock">
+                        <form id="add-stock-form">
+                            <div class="form-group">
+                                <label for="product-name">Nome do Produto</label>
+                                <input type="text" id="product-name" placeholder="Ex: Teclado Mecânico">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="product-code">Código</label>
+                                <input type="text" id="product-code" placeholder="Ex: TEC-001">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="product-category">Categoria</label>
+                                <select id="product-category">
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="electronics">Eletrônicos</option>
+                                    <option value="furniture">Móveis</option>
+                                    <option value="clothing">Vestuário</option>
+                                    <option value="books">Livros</option>
+                                    <option value="other">Outros</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="product-price">Preço Unitário (R$)</label>
+                                <input type="number" id="product-price" min="0" step="0.01" placeholder="Ex: 150.00">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="product-quantity">Quantidade</label>
+                                <input type="number" id="product-quantity" min="1" placeholder="Ex: 10">
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button type="submit" class="btn btn-primary">Adicionar ao Estoque</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="tab-content" id="remove-stock">
+                        <form id="remove-stock-form">
+                            <div class="form-group">
+                                <label for="remove-product-select">Selecione o Produto</label>
+                                <select id="remove-product-select">
+                                    <option value="">Selecione um produto</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="remove-quantity">Quantidade a Remover</label>
+                                <input type="number" id="remove-quantity" min="1" placeholder="Ex: 5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="remove-reason">Motivo</label>
+                                <select id="remove-reason">
+                                    <option value="sale">Venda</option>
+                                    <option value="return">Devolução</option>
+                                    <option value="damage">Avaria</option>
+                                    <option value="other">Outro</option>
+                                </select>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button type="submit" class="btn btn-danger">Remover do Estoque</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card inventory-list">
+                <h2 class="form-title">Lista de Produtos em Estoque</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Qtd.</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body">
+                        <!-- Os itens serão adicionados dinamicamente via JavaScript -->
+                    </tbody>
+                </table>
+                
+                <ul class="pagination">
+                    <li class="page-item"><span class="page-link">1</span></li>
+                    <li class="page-item"><span class="page-link">2</span></li>
+                    <li class="page-item"><span class="page-link">3</span></li>
+                </ul>
+            </div>
+            
+            <div class="card daily-report">
+                <h2 class="form-title">Relatório Diário de Movimentação</h2>
+                
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="daily-table">Tabela</button>
+                        <button class="tab-btn" data-tab="daily-chart">Gráfico</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="daily-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Código</th>
+                                    <th>Produto</th>
+                                    <th>Tipo</th>
+                                    <th>Quantidade</th>
+                                    <th>Valor Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="daily-report-body">
+                                <!-- Os dados serão adicionados dinamicamente via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="tab-content" id="daily-chart">
+                        <div class="chart-container" id="daily-movement-chart">
+                            <div class="chart-placeholder">
+                                <p>Gráfico de Movimentação Diária</p>
+                                <p>Os dados serão exibidos aqui</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
