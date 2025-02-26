@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão de Estoque</title>
+    <title>Sistema de Gestão de Estoque</title>
     <style>
         /* Estilos gerais */
         * {
@@ -183,7 +183,7 @@
             color: #f39c12;
         }
         
-        /* Formulário */
+        /* Formulário */
         .form-group {
             margin-bottom: 15px;
         }
@@ -265,7 +265,7 @@
             color: white;
         }
         
-        /* Notificações */
+        /* Notificações */
         .notification {
             position: fixed;
             top: 20px;
@@ -394,7 +394,7 @@
             font-weight: 600;
         }
         
-        td.saída {
+        td.saída {
             color: #e74c3c;
             font-weight: 600;
         }
@@ -404,7 +404,7 @@
     <header>
         <div class="container">
             <div class="logo">
-                <i>📦</i> Sistema de Gestão de Estoque
+                <i>📦</i> Sistema de Gestão de Estoque
             </div>
             <div class="date">Sexta, 21 de Fevereiro de 2025</div>
         </div>
@@ -436,7 +436,7 @@
             
             <div class="dashboard-card">
                 <div class="dashboard-card-title">
-                    <i class="dashboard-card-icon">📤</i> Saídas Hoje
+                    <i class="dashboard-card-icon">📤</i> Saídas Hoje
                 </div>
                 <div class="dashboard-card-value" id="today-exits">0</div>
             </div>
@@ -445,44 +445,44 @@
         <!-- Tabs Principal -->
         <div class="tab-container">
             <div class="tab-header">
-                <button class="tab-btn active" data-tab="inventory-tab">Inventário</button>
-                <button class="tab-btn" data-tab="movements-tab">Movimentações</button>
+                <button class="tab-btn active" data-tab="inventory-tab">Inventário</button>
+                <button class="tab-btn" data-tab="movements-tab">Movimentações</button>
                 <button class="tab-btn" data-tab="add-product-tab">Adicionar Produto</button>
                 <button class="tab-btn" data-tab="remove-product-tab">Remover do Estoque</button>
             </div>
             
-            <!-- Tab de Inventário -->
+            <!-- Tab de Inventário -->
             <div id="inventory-tab" class="tab-content active">
                 <table>
                     <thead>
                         <tr>
-                            <th>Código</th>
+                            <th>Código</th>
                             <th>Produto</th>
                             <th>Categoria</th>
-                            <th>Preço</th>
+                            <th>Preço</th>
                             <th>Quantidade</th>
                             <th>Status</th>
-                            <th>Ações</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="inventory-table-body">
-                        <!-- Conteúdo gerado dinamicamente pelo JavaScript -->
+                        <!-- Conteúdo gerado dinamicamente pelo JavaScript -->
                     </tbody>
                 </table>
             </div>
             
-            <!-- Tab de Movimentações -->
+            <!-- Tab de Movimentações -->
             <div id="movements-tab" class="tab-content">
                 <div id="daily-movement-chart" class="chart-placeholder">
-                    <!-- Gráfico gerado dinamicamente pelo JavaScript -->
+                    <!-- Gráfico gerado dinamicamente pelo JavaScript -->
                 </div>
                 
-                <h3 style="margin: 20px 0 10px 0;">Relatório Diário</h3>
+                <h3 style="margin: 20px 0 10px 0;">Relatório Diário</h3>
                 <table>
                     <thead>
                         <tr>
                             <th>Data</th>
-                            <th>Código</th>
+                            <th>Código</th>
                             <th>Produto</th>
                             <th>Tipo</th>
                             <th>Quantidade</th>
@@ -490,7 +490,7 @@
                         </tr>
                     </thead>
                     <tbody id="daily-report-body">
-                        <!-- Conteúdo gerado dinamicamente pelo JavaScript -->
+                        <!-- Conteúdo gerado dinamicamente pelo JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -500,7 +500,7 @@
                 <form id="add-product-form">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="product-code">Código do Produto</label>
+                            <label for="product-code">Código do Produto</label>
                             <input type="text" id="product-code" class="form-control" required>
                         </div>
                         
@@ -515,16 +515,16 @@
                             <label for="product-category">Categoria</label>
                             <select id="product-category" class="form-control" required>
                                 <option value="">Selecione uma categoria</option>
-                                <option value="electronics">Eletrônicos</option>
-                                <option value="furniture">Móveis</option>
-                                <option value="clothing">Vestuário</option>
+                                <option value="electronics">Eletrônicos</option>
+                                <option value="furniture">Móveis</option>
+                                <option value="clothing">Vestuário</option>
                                 <option value="books">Livros</option>
                                 <option value="other">Outros</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="product-price">Preço Unitário (R$)</label>
+                            <label for="product-price">Preço Unitário (R$)</label>
                             <input type="number" id="product-price" class="form-control" step="0.01" min="0.01" required>
                         </div>
                         
@@ -547,7 +547,7 @@
                         <label for="remove-product-select">Selecione o Produto</label>
                         <select id="remove-product-select" class="form-control" required>
                             <option value="">Selecione um produto</option>
-                            <!-- Opções geradas dinamicamente pelo JavaScript -->
+                            <!-- Opções geradas dinamicamente pelo JavaScript -->
                         </select>
                     </div>
                     
@@ -557,7 +557,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Confirmar Remoção</button>
+                        <button type="submit" class="btn btn-primary">Confirmar Remoção</button>
                     </div>
                 </form>
             </div>
@@ -565,8 +565,8 @@
     </div>
 
     <script>
-        // O código JavaScript será importado de um arquivo externo
-        // Aqui estaria a referência para o script.js
+        // O código JavaScript será importado de um arquivo externo
+        // Aqui estaria a referência para o script.js
     </script>
 </body>
 </html>
